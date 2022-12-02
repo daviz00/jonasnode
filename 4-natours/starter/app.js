@@ -3,8 +3,22 @@ const path = require('path');
 const express = require('express');
 
 const app = express();
-
 app.use(express.json());
+
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader(
+//     'Access-Control-Allow-Methods',
+//     'GET, POST, PUT, PATCH, DELETE'
+//   );
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   next();
+// });
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
@@ -14,6 +28,7 @@ const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    requestedAt: req.requestTime,
     data: {
       tours,
     },
